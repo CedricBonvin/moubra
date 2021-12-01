@@ -1,0 +1,43 @@
+*{
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+    font-size: 16px;
+    text-align: left;
+}
+
+html{
+    min-height: 100vh;
+}
+.page{
+    padding-top: 50px;
+}
+
+h1{
+    font-size: 25px;
+}
+.button{
+    border: none;
+    background: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    
+}
+
+.validButton{
+    background-color: green;
+    color: white;
+    padding: 10px 40px;
+}
+.dangerButton{
+    background-color: rgb(173, 40, 0);
+    color: white;
+    padding: 10px 40px;
+}
+
+input{
+    border: 1px solid lightgray;
+    padding: 2px;
+    color: gray;
+}
