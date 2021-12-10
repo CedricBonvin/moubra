@@ -1,5 +1,5 @@
 <template>
-    <div v-if="modal.display" class=" container">
+    <div  v-if="modal.display" class=" containerModalInfo">
         <p> {{ modal.text }}</p>
         <div class="boxButton">
             <button v-if="modal.danger" @click="closeModal" class="button dangerButton"> {{ modal.textBtnDanger}}</button>
@@ -14,7 +14,8 @@ export default {
     props : ["text", "modal"],
     data() {
         return {
-            displayModal : true
+            displayModal : true,
+            
         }
     },
     methods : {
@@ -26,7 +27,7 @@ export default {
 </script>
 
 <style scoped>
-    .container{
+    .containerModalInfo{
         position: fixed;
         z-index: 1000;
         left: 50%;

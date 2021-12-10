@@ -1,4 +1,4 @@
-const abo = require("../model/model-cours")
+const abo = require("../model/model-abo-base")
 
 exports.getAllCours = (req,res) => {
     abo.find()

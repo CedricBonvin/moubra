@@ -21,8 +21,12 @@ h1{
     background: none;
     padding: 10px 20px;
     font-weight: bold;
-    cursor: pointer;
-    
+    cursor: pointer;  
+    transition: .3s;  
+}
+.button:hover{
+    transform: scale(1.05);
+    box-shadow: 0 0 15px 5px lightgray;
 }
 
 .validButton{
@@ -30,6 +34,7 @@ h1{
     color: white;
     padding: 10px 40px;
 }
+
 .dangerButton{
     background-color: rgb(173, 40, 0);
     color: white;

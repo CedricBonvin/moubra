@@ -1,6 +1,6 @@
 const Users = require("../model/model-users")
 const PanierBuffer = require("../model/model-panierBuffer")
-const Abo = require("../model/model-cours")
+const Abo = require("../model/model-abo-base")
 
 const jwt = require("jsonwebtoken")
 
@@ -39,6 +39,12 @@ exports.userUpload = (req,res) => {
         {...req.body.user}     
     )
     .then(() => res.status(200).json({message : "user update succès"}))
+    .catch(err => res.status(500).json({erreur : err, message : "impossible de trouvé l'utilisateur..!"}))
+}
+
+exports.userRecherche = (req,res) => {
+    Users.find(req.body.query).populate("abonnement")
+    .then(response => res.status(200).json(response))
     .catch(err => res.status(500).json({erreur : err, message : "impossible de trouvé l'utilisateur..!"}))
 }
 
@@ -81,4 +87,23 @@ exports.getPanierBuffer = async (req,res) => {
     //     res.status(200).json(panier)
     // })
     // .catch(err => res.status(500).json({erreur : err, message : "impossible de rajouter le buffer panier" }))   
+}
+
+exports.userUpdateFromAdmin = (req,res) => {
+    Users.updateOne(
+        {_id : req.body.userToUpdate},
+        {...req.body.userUpdate}     
+    )
+    .then(() => {
+        Users.findById(req.body.userToUpdate)
+        .then(response => res.status(200).json(response))
+        .catch(err => res.status(500).json(err))
+    })
+    .catch(err => res.status(500).json({erreur : err, message : "impossible de trouvé l'utilisateur..!"}))
+}
+
+exports.deleteUser = (req,res) => {
+    Users.remove({_id : req.body.userToDelete})
+    .then(() => res.status(200).json({message : "utilisateur supprimé"}))
+    .catch(err => res.status(500).json({erreur : err, message : "impossible de supprimer l'utilisateur..!"}))
 }

@@ -5,5 +5,9 @@ const userSchema = mongoose.Schema({
     password : { type : String},
     nom : { type : String},
     prenom : { type : String},
+    abonnement: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'abos'
+      }]
 })
 module.exports = mongoose.model("users",userSchema)

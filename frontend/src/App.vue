@@ -14,7 +14,7 @@ import topBar from './components/layout/top-bar.vue'
 import footers from './components/layout/footer.vue'
 export default {
 	components: { topBar, footers },
-	name : "home",
+	name : "Accueil",
 	methods : {
 
 		checkToken(){
