@@ -18,6 +18,11 @@ router.post("/user/getPanierBuffer",auth, ctrlUsers.getPanierBuffer )
 router.post("/admin/updateUser", auth, ctrlUsers.userUpdateFromAdmin)
 router.post("/admin/deleteUser", auth, ctrlUsers.deleteUser)
 router.post("/admin/update-abonnement", auth, ctrlAdmin.updateAbo)
+router.post("/admin/all-abo", auth, ctrlAdmin.allAbo)
+
+router.post("/admin/planning/getPlanning", auth, ctrlAdmin.getPlanning)
+router.post("/admin/planning/ajouterDatePlanning", auth, ctrlAdmin.ajouterDate)
+router.post("/admin/planning/updatePlanning", auth, ctrlAdmin.updatePlanning)
 
 // ADMIN
 router.post("/admin/new-abo", auth, ctrlAdmin.newAbo)

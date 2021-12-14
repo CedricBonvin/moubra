@@ -46,3 +46,6 @@ input{
     padding: 2px;
     color: gray;
 }
+.shadow{
+    box-shadow: 0 0 15px 5px lightgray;
+}

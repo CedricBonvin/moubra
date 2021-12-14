@@ -58,11 +58,7 @@ export default {
   color: #2c3e50;
   position: relative;
 }
-.topBar{
-	position: absolute;
-	top: 0;
-	left: 0;
-}
+
 .baseContainer{
 	min-height: 100vh;
 	display: flex;

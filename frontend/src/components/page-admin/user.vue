@@ -55,7 +55,7 @@
 
                 <!-- CARTE USER -->
                 <div class="boxUserFind">  
-                    <div class="titleBoxUser">{{user.length}} USER TROUVÉ</div>
+                    <div class="titleBoxUser"> USER TROUVÉ : <span class="nbrUserTrouve">{{user.length}}</span></div>
                     <div v-for="item in user" :key="item.id" class="carteUserFind" :id="item._id">
                         <h3 class="titleCarteUser">USER</h3>
                         <div class=" ligneCarteUser">
@@ -781,6 +781,16 @@ export default {
     .modifier{
         background: red;
         color: white;
+    }
+    .titleBoxUser{
+        font-weight: bold;
+        width: 90%;
+        margin: auto;
+    }
+    .nbrUserTrouve{
+        font-size: 20px;
+        color: rgb(36, 57, 253);
+        font-weight: 900;
     }
 
 </style>
