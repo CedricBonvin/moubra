@@ -1,22 +1,36 @@
 const Users = require("../model/model-users")
 const PanierBuffer = require("../model/model-panierBuffer")
 const Abo = require("../model/model-abo-base")
+const NewsLetter = require("../model/model-newsLetter")
 
 const jwt = require("jsonwebtoken")
 
-exports.userIscription = (req,res) => {
-
+exports.userIscription = async (req,res) => {
     let user = new Users({...req.body})
-    user.save()
-    .then(response => res.status(200).json(response))
-    .catch(err => res.status(500).json({erreur : err, message : "impossible d'enregistré le user"}))
+    let err = false
+    let saveUser = true
+    console.log(req.body)
+    try {
+        await user.save()    
+    } catch  { err = true ; saveUser = false}
+
+    if (req.body.newsLetter){
+        if (saveUser){
+            try {          
+                let itemNewsLetter = new NewsLetter({ IdUser : user._id, mail : user.mail})
+                    await itemNewsLetter.save()
+            } catch { err = true }
+        }
+    }
+
+    err === false ? res.status(200).json(user) : res.status(500).json({message : "problème pour enregister le user ou la news-letter"})  
 }
 
 exports.userConnection = (req,res) => {
     Users.findOne({mail : req.body.mail})
     .then(user => {
         if (!user){
-            res.status(400).json({message : "le mail n'a pas été trouvé..!"})
+            res.status(400).json({message : "limpossiblde de se connecter .. Mail non trouvé !"})
         }else{
             if (user.password === req.body.password){
                 res.status(200).json({
@@ -27,6 +41,8 @@ exports.userConnection = (req,res) => {
                         { expiresIn: '24h' }
                     )
                 })
+            } else if (!user.password || user.password !==req.body.password){
+                res.status(400).json({message : "Mot de passe incorrect !"})
             }
         }
     })
@@ -43,7 +59,7 @@ exports.userUpload = (req,res) => {
 }
 
 exports.userRecherche = (req,res) => {
-    Users.find(req.body.query).populate("abonnement")
+     Users.find(req.body.query).populate("abonnement")
     .then(response => res.status(200).json(response))
     .catch(err => res.status(500).json({erreur : err, message : "impossible de trouvé l'utilisateur..!"}))
 }

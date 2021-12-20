@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <top-bar class="topbar"/>
+	<connection v-if="this.$store.state.displayLogin" />
     <div class="baseContainer">
 		<router-view/>	
 		<footers />
@@ -12,8 +13,9 @@
 <script>
 import topBar from './components/layout/top-bar.vue'
 import footers from './components/layout/footer.vue'
+import connection from './components/forAll/connection.vue'
 export default {
-	components: { topBar, footers },
+	components: { topBar, footers, connection },
 	name : "Accueil",
 	methods : {
 
@@ -56,15 +58,16 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  position: relative;
+  /* position: relative; */
 }
 
-.baseContainer{
+/* .baseContainer{
 	min-height: 100vh;
+	width: 100%;
 	display: flex;
 	flex-flow: column;
 	justify-content: space-between;
-}
+} */
 #nav a.router-link-exact-active {
   color: #42b983;
 }

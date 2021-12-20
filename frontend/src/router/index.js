@@ -23,26 +23,31 @@ const routes = [
     name: 'Panier',
     component: () => import(/* webpackChunkName: "about" */ '../views/Panier.vue')
   },
-  {
-    path: '/Login',
-    name: 'Login',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
-  },
+  // {
+  //   path: '/Login',
+  //   name: 'Login',
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
+  // },
   {
     path: '/user',
     name: 'user',
     component: () => import(/* webpackChunkName: "about" */ '../views/user.vue')
   },
-  {
-    path: '/abonnement',
-    name: 'abonnement',
-    component: () => import(/* webpackChunkName: "about" */ '../views/abonnement.vue')
-  },
+  // {
+  //   path: '/abonnement',
+  //   name: 'abonnement',
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/abonnement.vue')
+  // },
   {
     path: '/admin',
     name: 'admin',
     component: () => import(/* webpackChunkName: "about" */ '../views/admin.vue')
-  }
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import(/* webpackChunkName: "about" */ '../views/test.vue')
+  },
 ]
 
 const router = new VueRouter({

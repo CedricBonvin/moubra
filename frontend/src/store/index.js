@@ -11,6 +11,7 @@ const store = new Vuex.Store({
        HOST : "http://localhost:3000",
        user : {},
        panier : "",
+       displayLogin : false
     },
     mutations : {
         changeUser(state, item){

@@ -3,36 +3,74 @@ const NewAbo = require("../model/model-abo")
 const User = require("../model/model-users")
 const Planning = require("../model/model-planning")
 
-
+const hbs = require("nodemailer-express-handlebars")
+const nodemailer = require("nodemailer")
 
 
 exports.newAbo = async (req,res) => {
-    let abo =  await AboBase.findById(req.body.idAbo)
-    delete abo._doc._id
-    const newAbo = await new NewAbo(abo._doc)
-    newAbo.remarque = req.body.remarque
-    newAbo.titulaire = req.body.titulaire
+    let abo
+    try {
+         abo =  await AboBase.findOne({ _id :req.body.idAbo}, {_id : 0})
+    } catch (error) {
+        res.status(500).json(error)
+    }
+     
+     let newAbo = abo._doc
+    
+     newAbo.dateEmission = new Date(Date.now())
+     newAbo.titulaire = req.body.titulaire
+     newAbo.remarque = req.body.remarque
 
-   // push idNewAbo dans les abonnements du User
-    User.updateOne(
-        {_id : req.body.client._id}, 
-        { $push : { abonnement : newAbo._id}}
+    // type mois
+     if (newAbo.type === "mois"){
+         let duree = newAbo.dureeMois
+             dateActuel = new Date(Date.now())
+             newAbo.dateEcheance = new Date(dateActuel.setMonth(dateActuel.getMonth() + duree))
+     }
+
+     let saveAbo = new NewAbo(
+        { ...newAbo }
     )
-    .then(() => console.log("l'id du nouvel abonnement à bien été injecter dans les abonnements du User"))
-    .catch(err => res.status(500).json(err))
+ 
+ 
 
-    // save newAbo dans abos
-    newAbo.save()
-    .then(() => res.status(200).json({message : "L'abonnement à bien été créer !"}))
-    .catch(err => res.status(500).json(err))
+//    // push idNewAbo dans les abonnements du User
+   await User.updateOne(
+        {_id : req.body.client._id}, 
+        { $push : { abonnement : saveAbo._id}}
+    )
+    saveAbo.save()
+    .then(response => res.status(200).json(response))
+    .catch(response => res.status(500).json(response))
+    // .then(() => console.log("l'id du nouvel abonnement à bien été injecter dans les abonnements du User"))
+    // .catch(err => res.status(500).json(err))
+
+//     // save newAbo dans abos
+//     newAbo.save()
+//     .then(() => res.status(200).json({message : "L'abonnement à bien été créer !"}))
+//     .catch(err => res.status(500).json(err))
 }
 
 exports.updateAbo = (req,res) => {
+    // si l'abo est au MOIS check pour actif
+    if (req.body.updateAbo.dateEcheance){
+        if (new Date(req.body.updateAbo.dateEcheance) < Date.now()){
+            req.body.updateAbo.actif = false
+        }else { req.body.updateAbo.actif = true}
+    }
+    // si l'abo est type ENTREE => check pour actif 
+    if(req.body.updateAbo.entreRestante){
+        if (req.body.updateAbo.entreRestante <= 0){
+            req.body.updateAbo.actif = false
+        }else{ req.body.updateAbo.actif = true }
+    }
+  
 
-    console.log(req.body)
     NewAbo.updateOne(
-        {_id : req.body.updateAbo._id},
-        {...req.body.updateAbo}     
+        {_id : req.body.updateAbo.idAboUpdate},
+        { $set : {
+            ...req.body.updateAbo
+        }}    
     )
     .then(response => {
         res.status(200).json(response)
@@ -42,20 +80,23 @@ exports.updateAbo = (req,res) => {
 }
 
 exports.allAbo = (req,res) => {
-
     console.log(req.body)
-    NewAbo.find(
-        { 'titulaire.prenom': req.body.query.prenom }
-    )   
-    .then(response => {
-        if (response.length === 0){
-           NewAbo.find()
-            .then(response => res.status(200).json(response))
-        }else
-        res.status(200).json(response)
-    })
-    .catch(err => console.log(err))
 
+    if (req.body.query.allAbo){
+        NewAbo.find()
+        .then(response => {res.status(200).json(response)})
+        .catch(err => res.status(500).json({message : "impossible d'afficher tous les abonnements !"}))
+    }else{
+        NewAbo.find(    
+            {  $or : [
+                  {"titulaire.nom" : req.body.query.nom},
+                  {"titulaire.prenom" : req.body.query.prenom},
+                  {"titulaire.mail" : req.body.query.mail},          
+              ]}
+        )     
+        .then(response => {res.status(200).json(response)})
+        .catch(err => console.log(err))
+    }
 }
 
 exports.getPlanning = (req,res) => {
@@ -105,3 +146,67 @@ exports.updatePlanning = async (req,res) => {
     }
     res.status(200).json({message : "Le planning à bien été mis à jour"})
 }
+
+exports.sendNewsLetter = (req,res) => {
+    let transporter = nodemailer.createTransport({
+        host: "devise.o2switch.net",
+        port: 587,
+        secure: false,
+        service: "o2switch",
+        auth: {
+            user: "info@monkey-school.ch",
+            pass: process.env.MAIL_PW
+        },
+        debug: false,
+        logger: true 
+    });
+    // POUR LE TEMPLATE
+    transporter.use("compile", hbs({
+        viewEngine : "express-handlebars",
+        viewPath : "mail-template",
+        extName: ".hbs"
+        })
+    )
+
+    // Message object
+    const messageFrom = "info@monkey-school.ch"
+    // const messageTo = req.body.mail
+
+    let mailToClient = {
+        from: messageFrom,
+        to: "c.bonvin@yahoo.fr",
+        subject: "test fondation",
+        template : "hero-min",
+        context: {          
+                nom : req.body.user.nom,                   
+                prenom: req.body.prenom,                   
+                text : req.body.mail.text,                      
+        },
+        // attachments: [{           
+        //         filename: 'monkey-logo.jpeg',
+        //         path: __dirname +'/images-mail/monkey-logo.jpeg',
+        //         cid: 'monkey-logo',
+        //     },
+        //     {
+        //         filename: 'monkey-logo.jpeg',
+        //         path: __dirname +'/images-mail/monkey-logo.jpeg',
+        //         content: 'le super logo',
+        //         contentType: 'text/plain' 
+        //     }
+        // ],
+        
+    };
+
+    transporter.sendMail(mailToClient, (err, info) => {
+        if (err) {
+            console.log('Error occurred. ' + err.message);
+            res.status(500).json( {mesage : "impossible d'envoyer le mail au client", error : err})
+        } else{
+            console.log("mail envoyé" + info)
+            res.status(200).json("les mails ont été envoyé avec succès")
+        }                
+    })
+}
+
+
+

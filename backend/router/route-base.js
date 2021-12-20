@@ -7,7 +7,7 @@ const ctrlAdmin = require("../controler/ctrl-admin")
 const auth = require("../middleware/auth")
 
 router.get("/all-cours", ctrlBase.getAllCours);
-router.post("/user/create", ctrlUsers.userIscription);
+router.post("/user/create", auth, ctrlUsers.userIscription);
 router.post("/user/connection", ctrlUsers.userConnection);
 router.post("/user/upload",auth, ctrlUsers.userUpload )
 router.post("/user/recherche",auth, ctrlUsers.userRecherche )
@@ -23,6 +23,7 @@ router.post("/admin/all-abo", auth, ctrlAdmin.allAbo)
 router.post("/admin/planning/getPlanning", auth, ctrlAdmin.getPlanning)
 router.post("/admin/planning/ajouterDatePlanning", auth, ctrlAdmin.ajouterDate)
 router.post("/admin/planning/updatePlanning", auth, ctrlAdmin.updatePlanning)
+router.post("/admin/sendNewsLetter", auth, ctrlAdmin.sendNewsLetter)
 
 // ADMIN
 router.post("/admin/new-abo", auth, ctrlAdmin.newAbo)

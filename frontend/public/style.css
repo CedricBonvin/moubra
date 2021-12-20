@@ -5,6 +5,9 @@
     font-size: 16px;
     text-align: left;
 }
+:root {
+    --bcg-header: rgb(83, 183, 223);
+  }
 
 html{
     min-height: 100vh;
@@ -34,13 +37,17 @@ h1{
     color: white;
     padding: 10px 40px;
 }
-
+.validButton:hover{
+    background-color: rgb(28, 153, 28);
+}
 .dangerButton{
     background-color: rgb(173, 40, 0);
     color: white;
     padding: 10px 40px;
 }
-
+.dangerButton:hover{
+    background-color: rgb(168, 67, 36);
+}
 input{
     border: 1px solid lightgray;
     padding: 2px;

@@ -22,7 +22,7 @@ export default {
   
 }
 h1{
-    font-size: 100px;
+    font-size: 50px;
     font-weight: bold;
     color: white;
     padding-top: 100px;

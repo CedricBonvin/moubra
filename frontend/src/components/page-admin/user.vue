@@ -1,8 +1,9 @@
 <template>
   <div>
+        <h1>UTILISATEUR</h1>
         <modal v-if="modal.display" :modal="modal" />
     <!-- NEW USER -->
-        <h2>Nouvelle utilisateur</h2>
+        <h2>CRÉER UTILISATEUR</h2>
         <div class="base">
             <h3>CRÉER USER</h3>
             <div class="boxCreateUser">
@@ -24,6 +25,17 @@
                 </div>
                 
                 <div class="boxButtonNewUser">
+                    <div class="boxNewletter">
+                        <div for="isNewLetter" class="titleNewsLetter" >ACEPTÉ LA NEWS LETTER</div>
+                        <div class="boxRadio">
+                            <label for="newsLetterYes">OUI</label>
+                            <input class="checkboxNewLetter" name="NnewsLetter" type="radio" value="true" v-model="newUser.newsLetter">
+                        </div>
+                        <div class="boxRadio">
+                            <label for="newsLetterNo">NON</label>
+                            <input class="checkboxNewLetter" name="NnewsLetter" type="radio" value="false" v-model="newUser.newsLetter">
+                        </div>
+                    </div>
                     <button @click="createUser" class="button validButton ">CRÉER USER</button>
                 </div>
             </div>
@@ -31,7 +43,7 @@
     <!-- RECHERCHE USER -->
 
         <div class="boxSearchUser">
-            <h2>Chercher un Utilisateur</h2>
+            <h2>CHERCHER UTILISATEUR</h2>
             <div class="base baseRecherche">
 
                 <!-- BOX RECHERCHE -->
@@ -88,12 +100,21 @@
                             <!-- USER TOUS LES ABO -->
                         <div  class="boxAboUser">
                             <div class="headerboxResult">
-                                <h4>NBR ABONNEMENTS : {{ item.abonnement.length}}</h4>
+                                <div class="boxInfoAbo">
+                                    <h4 class="nbrAbo">ABONNEMENTS : <span class="nbrAboTrouve">{{ item.abonnement.length}}</span></h4>
+                                    <h4 class="nbrAbo">ACTIF : <span class="nbrAboActif"> {{ checkActif(item) }}  </span></h4>
+                                    <h4 class="nbrAbo">ÉPUISÉ : <span class="nbrAboEpuise">{{ checkEpuise(item) }} </span></h4>
+                                </div>
                                 <p @click="closeBox(item._id,'.boxAboUser')" class="closeHeaderBoxResult">X</p>
                             </div>
                             <p v-if="item.abonnement.length === 0" class="aucunAbo">AUCUN ABONNEMENT</p>
                             <div v-for="item in item.abonnement" :key="item._id">
-                                <div :id="item._id" class="carteAbo">
+                                    <carte-abo
+                                        :item="item"
+                                        :modal="modal"
+                                        @rechercheAbo="rechercheUser"  
+                                    />
+                                <!-- <div :id="item._id" class="carteAbo"> 
                                     <p v-if="item.entreRestante > 0" class="statusAbo aboActif">ACTIF</p>
                                     <p v-else class="statusAbo aboEpuise">ÉPUISE</p>
                                     <div class="headerCarteAbo">
@@ -111,16 +132,16 @@
                                         <div class="ColCarteAbo"><input  type="number" max="10" min="0" class="inputEntre" disabled v-model="item.entreRestante"></div>
                                         <div class="ColCarteAbo">{{ item.prix}}</div>
                                     </div>
-                                        <!-- <div class="boxRemarqueCarte">
+                                        <div class="boxRemarqueCarte">
                                             <label for="carteRemarque">Remarque</label>
                                             <textarea class="ColCarteAbo carteRemarque" id="carteRemarque" v-model="item.remarque"></textarea>
-                                        </div> -->
+                                        </div>
                                     <div class="boxButtonCarte">
                                         <button class="button validButton buttonModifierAbo" @click="modifierAbo(item._id)">MODIFIIER</button>
                                         <button class="button dangerButton buttonCancelModifAbo" @click="cancelModifierAbo(item._id)">ANNULER</button>
                                         <button class="button validButton buttonUpdateAbo" @click="updateAbo(item)">CONFIRMER</button>
-                                    </div>
-                                </div>
+                                    </div> 
+                                </div>  -->
                             </div>
                         </div>
 
@@ -162,7 +183,7 @@
                                 
                                 <span class="choiceActionAbo">CHOISISSEZ VOTRE ABO</span>                  
                                 <select v-model="choiceNewAbo">
-                                    <option v-for="item in selectChoixAbo" :key="item._id" :value="item._id" selected="selected">{{ item.abo}} </option>
+                                    <option v-for="item in selectChoixAbo" :key="item._id" :value="item._id" selected="selected">{{ item.abo}} {{item.class}} </option>
                                 </select>
                                 <button @click="ajouterNewAbo(item)" class="button validButton">CRÉER ABONNEMENT</button>
                             </div>
@@ -176,8 +197,9 @@
 
 <script>
 import modal from '../forAll/modal.vue'
+import CarteAbo from './comp-admin/carteAbo.vue'
 export default {
-  components: { modal },
+  components: { modal, CarteAbo },
     name : "create-user",
     data(){
         return{
@@ -193,7 +215,7 @@ export default {
             noUser : false,
             selectChoixAbo : [],
             choiceNewAbo : "",
-            newTitulaireAbo : {}
+            newTitulaireAbo : {},
         }
     },
     methods : {
@@ -204,10 +226,11 @@ export default {
                 headers: {"Content-type": "application/json; charset=UTF-8",}
             })
             .then(res => {
-                if(res.ok){
-                    
-                    this.modal.display = true
-                    this.modal.text = "Le user à bien été enregister !"
+                this.modal.display = true
+                if(res.status === 200){  
+                    this.modal.text = "LE USER À BIEN ÉTÉ ENREGISTÉ !"
+                }else{
+                    this.modal.text = "IMPOSSIBLE DE CRÉER LE NOUVEL UTILISATEUR !"
                 }
                 return res.json()
             } )
@@ -243,7 +266,7 @@ export default {
                     item.abonnement.reverse()
                 }
                 this.user = response
-            })
+            }).catch(err => console.log(err))
         },
         modifierUser(id){
             let parent = document.getElementById(id)
@@ -500,6 +523,20 @@ export default {
             for (let item of tabLink){
                 item.classList.remove("selectLink")
             }
+        },
+        checkActif(item){
+            let count = 0
+            for (let abo of item.abonnement){
+                abo.actif ? count++ : null
+            }
+            return count
+        },
+         checkEpuise(item){
+            let count = 0
+            for (let abo of item.abonnement){
+                !abo.actif ? count++ : null
+            }
+            return count
         }
     },
     beforeMount(){
@@ -532,7 +569,16 @@ export default {
     .boxButtonNewUser{
         width: 100%;
         display: flex;
-        justify-content: right;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    h1{
+        padding: 50px;
+        font-size: 50px;
+        background: var(--bcg-header);
+        color: white;
     }
     h2{
         font-weight: bold;
@@ -668,6 +714,7 @@ export default {
         cursor: pointer;
         font-weight: bold;
         transition: .3s;
+        font-size: 20px;
     }
     .linkAction:hover{
         color: blue;
@@ -792,5 +839,46 @@ export default {
         color: rgb(36, 57, 253);
         font-weight: 900;
     }
-
+    .checkboxNewLetter{
+        margin-right: 10px;
+    }
+    .titleNewsLetter{
+        color: blue;
+        text-decoration: underline;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .boxNewletter{
+        margin-left: 50px;
+        display: flex;
+        flex-flow: column;
+    }
+    .boxInfoAbo{
+        display: flex;
+    }
+    .nbrAbo{
+        margin-left: 20px;
+    }
+    .nbrAboTrouve{
+        font-size: 25px;
+        font-weight: bold;
+    }
+    .nbrAboActif{
+        color: green;
+        font-size: 25px;
+        font-weight: bold;
+    }
+    .nbrAboEpuise{
+        color: red;
+        font-size: 25px;
+        font-weight: bold;
+    }
+    .boxRadio{
+        width: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;   
+        margin: 2px 0; 
+    
+    }
 </style>

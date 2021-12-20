@@ -27,7 +27,7 @@
       </div>
 
         <!-- BOX AFFICHAGE  -->
-      <div class="containerAffichePlannig">
+      <div class="containerAffichePlannig shadow">
           <h2>AFFICHER LE PLANNING</h2>
           <div class="boxAfficheDate">
               <p class="duAu">DU</p>
@@ -295,23 +295,27 @@ export default {
         top: 115px;
         left: 85%;
     }
-    .boxAjouterDate{
-        padding: 20px;
-    }
+    
     h1{
+        padding: 50px;
         font-size: 50px;
-        padding: 50px;  
+        background: var(--bcg-header);
+        color: white;
     }
     h3{
         font-size: 16px;
         font-weight: bold;
         background: rgb(236, 236, 236);
         padding: 5px ;
-
     }
     .paper{
         width: 70%;
         margin: auto;
+    }
+    .boxAjouterDate{
+        padding: 20px;
+        margin-top: 50px;
+        margin-left: 40px;
     }
     .boxChoixDate{
         display: flex;
@@ -367,9 +371,8 @@ export default {
     }
     .containerAffichePlannig{
         width: 80%;
-        margin: auto;
+        margin-left: 40px;
         margin-top: 50px;
-        background: rgb(236, 236, 236);
         padding: 10px;
     }
     .boxAfficheDate{
